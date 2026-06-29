@@ -45,6 +45,8 @@ npm run check
 - The current model is `openrouter/openai/gpt-5-mini`.
 - Source code lives under `src/mastra/`.
 - The npm cache is forced to `../.npm-cache` by project scripts to avoid global cache drift and local permission collisions during Mastra bundling.
+- Codex hooks para este workspace ficam definidos no `~/.codex/config.toml`; mantenha neste repositório apenas os scripts em `.codex/hooks/`.
+- Nao reintroduza `.codex/hooks.json` neste repo: hooks project-local versionados voltam a disparar review de trust no startup.
 
 ## Container deployment
 
