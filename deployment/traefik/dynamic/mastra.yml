@@ -1,0 +1,37 @@
+http:
+  routers:
+    agents-telegram-webhook:
+      entryPoints:
+        - web
+      middlewares:
+        - agents-security
+      priority: 100
+      rule: Host(`mastra.localhost`) && PathPrefix(`/telegram/webhook/`)
+      service: agents
+
+    agents:
+      entryPoints:
+        - web
+      middlewares:
+        - agents-auth
+        - agents-security
+      priority: 10
+      rule: Host(`mastra.localhost`)
+      service: agents
+
+  services:
+    agents:
+      loadBalancer:
+        servers:
+          - url: http://agents:4111
+
+  middlewares:
+    agents-security:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: no-referrer
+    agents-auth:
+      basicAuth:
+        usersFile: /run/secrets/traefik_users

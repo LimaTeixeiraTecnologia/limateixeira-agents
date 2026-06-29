@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-integracao-mastra-telegram/3.0_execution_report.md
+summary: Webhook e health route do adapter confirmados no runtime Mastra.
+timestamp: 2026-06-29T14:26:15Z

@@ -1,0 +1,4 @@
+Repository: https://github.com/mastra-ai/skills
+Path: skills/mastra
+Pinned commit: 7210bdbd0ea9a083244ec591c867a77ef564cc66
+Pinned on: 2026-06-29

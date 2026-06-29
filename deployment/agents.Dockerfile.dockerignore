@@ -1,0 +1,14 @@
+.git
+.gitignore
+.agents
+.claude
+.codex
+.npm-cache
+scripts
+deployment
+agents/.env
+agents/.env.*
+agents/.mastra
+agents/node_modules
+agents/*.db
+agents/*.db-*

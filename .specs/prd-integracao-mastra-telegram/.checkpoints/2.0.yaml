@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-integracao-mastra-telegram/2.0_execution_report.md
+summary: Persistência, deduplicação e vínculo chat-thread confirmados com testes.
+timestamp: 2026-06-29T14:26:15Z

@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-integracao-mastra-telegram/6.0_execution_report.md
+summary: Traefik, compose, runbook e smoke sintético do Telegram validados.
+timestamp: 2026-06-29T14:26:15Z

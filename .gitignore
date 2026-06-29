@@ -1,0 +1,25 @@
+.npm-cache/
+
+# Local environment files
+.env
+.env.*
+
+# Mastra local runtime/build artifacts
+.mastra/
+agents/.mastra/
+
+# Dependency directories
+node_modules/
+agents/node_modules/
+
+# Local databases
+*.db
+*.db-*
+*.duckdb
+*.duckdb-*
+*.duckdb.wal
+
+# Deployment local secrets and backups
+deployment/.env
+deployment/.secrets/
+deployment/backups/

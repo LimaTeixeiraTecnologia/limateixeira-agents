@@ -1,0 +1,39 @@
+{
+  "name": "agents",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm_config_cache=../.npm-cache mastra dev",
+    "build": "npm_config_cache=../.npm-cache mastra build --studio",
+    "start": "npm_config_cache=../.npm-cache mastra start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "@mastra/core": "^1.47.0",
+    "@mastra/evals": "^1.5.0",
+    "@mastra/loggers": "^1.2.0",
+    "@mastra/memory": "^1.21.2",
+    "@mastra/observability": "^1.15.2",
+    "@mastra/pg": "^1.14.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5",
+    "@types/node": "^26.0.1",
+    "mastra": "^1.16.0",
+    "pg-mem": "^3.0.5",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.4"
+  }
+}

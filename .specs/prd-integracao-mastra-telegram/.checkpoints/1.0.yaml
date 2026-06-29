@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-integracao-mastra-telegram/1.0_execution_report.md
+summary: Configuração tipada, bootstrap idempotente e seed da allowlist validados.
+timestamp: 2026-06-29T14:26:15Z

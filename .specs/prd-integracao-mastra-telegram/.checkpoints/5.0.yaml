@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-integracao-mastra-telegram/5.0_execution_report.md
+summary: Outbound com retries limitados, falha rastreável e suíte ampliada concluídos.
+timestamp: 2026-06-29T14:26:15Z

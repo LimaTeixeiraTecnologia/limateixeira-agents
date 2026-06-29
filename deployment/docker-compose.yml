@@ -1,0 +1,107 @@
+services:
+  traefik:
+    image: traefik:v3.5
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "${TRAEFIK_HTTP_PORT:-80}:80"
+    restart: unless-stopped
+    secrets:
+      - traefik_users
+    volumes:
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+    networks:
+      - edge
+
+  agents:
+    build:
+      context: ..
+      dockerfile: deployment/agents.Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      MASTRA_HOST: 0.0.0.0
+      MASTRA_PG_DATABASE: ${POSTGRES_DB:-agents}
+      MASTRA_PG_HOST: postgres
+      MASTRA_PG_PASSWORD_FILE: /run/secrets/postgres_password
+      MASTRA_PG_PORT: 5432
+      MASTRA_PG_USER: ${POSTGRES_USER:-agents}
+      MASTRA_STORAGE_SCHEMA: agents
+      OPENROUTER_API_KEY_FILE: /run/secrets/openrouter_api_key
+      PORT: 4111
+      TELEGRAM_ALLOWED_UPDATES: ${TELEGRAM_ALLOWED_UPDATES:-message}
+      TELEGRAM_BOT_TOKEN_FILE: /run/secrets/telegram_bot_token
+      TELEGRAM_ENABLED: ${TELEGRAM_ENABLED:-false}
+      TELEGRAM_PUBLIC_BASE_URL: ${TELEGRAM_PUBLIC_BASE_URL:-}
+      TELEGRAM_WEBHOOK_PATH_KEY_FILE: /run/secrets/telegram_webhook_path_key
+      TELEGRAM_WEBHOOK_SECRET_TOKEN_FILE: /run/secrets/telegram_webhook_secret_token
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "const net=require('node:net');const port=Number(process.env.PORT||4111);const socket=net.connect(port,'127.0.0.1',()=>{socket.end();process.exit(0)});socket.on('error',()=>process.exit(1));"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    secrets:
+      - openrouter_api_key
+      - postgres_password
+      - telegram_bot_token
+      - telegram_webhook_path_key
+      - telegram_webhook_secret_token
+    networks:
+      - edge
+      - internal
+
+  postgres:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-agents}
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C.UTF-8 --data-checksums
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_USER: ${POSTGRES_USER:-agents}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    secrets:
+      - postgres_password
+    volumes:
+      - agents_postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - internal
+
+networks:
+  edge:
+    driver: bridge
+    name: agents_edge
+  internal:
+    driver: bridge
+    name: agents_internal
+
+volumes:
+  agents_postgres_data:
+    name: agents_postgres_data
+
+secrets:
+  openrouter_api_key:
+    file: ./.secrets/openrouter_api_key
+  postgres_password:
+    file: ./.secrets/postgres_password
+  telegram_bot_token:
+    file: ./.secrets/telegram_bot_token
+  telegram_webhook_path_key:
+    file: ./.secrets/telegram_webhook_path_key
+  telegram_webhook_secret_token:
+    file: ./.secrets/telegram_webhook_secret_token
+  traefik_users:
+    file: ./.secrets/traefik_users
