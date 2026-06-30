@@ -41,12 +41,23 @@ npm run check
 - Mastra Studio is available at `http://localhost:4111` when `npm run dev` is running.
 - O storage principal do Mastra usa `PostgresStore` no schema `agents`.
 - O adapter Telegram expõe `POST /telegram/webhook/:webhookKey` e `GET /telegram/health` no mesmo servidor do Mastra.
+- O runtime do Marcos expõe `GET /marcos/health`, que agrega knowledge, Telegram, approvals, tool registry e ausência de legado ativo.
+- O catálogo documental detalhado continua disponível em `GET /marcos/knowledge/status`.
 - O canal Telegram só fica pronto para go-live com `TELEGRAM_ENABLED=true`, secrets válidos, domínio público HTTPS e `telegram_user_id` real dos dois usuários iniciais.
 - The current model is `openrouter/openai/gpt-5-mini`.
 - Source code lives under `src/mastra/`.
 - The npm cache is forced to `../.npm-cache` by project scripts to avoid global cache drift and local permission collisions during Mastra bundling.
 - Codex hooks para este workspace ficam definidos no `~/.codex/config.toml`; mantenha neste repositório apenas os scripts em `.codex/hooks/`.
 - Nao reintroduza `.codex/hooks.json` neste repo: hooks project-local versionados voltam a disparar review de trust no startup.
+
+## Go-Live Checklist
+
+- `npm run check` precisa fechar verde no workspace `agents`.
+- `npm run dev` precisa subir com PostgreSQL acessível no `DATABASE_URL`.
+- `GET /marcos/health` deve retornar `200` com `ready=true`.
+- `GET /telegram/health` deve retornar `200` com allowlist ativa para os dois usuários iniciais.
+- `GET /marcos/knowledge/status` deve retornar `200` sem drift de checksum nem documentos/chunks ausentes.
+- O comando legado `/weather` deve responder apenas com mensagem controlada, sem reativar runtime legado.
 
 ## Container deployment
 

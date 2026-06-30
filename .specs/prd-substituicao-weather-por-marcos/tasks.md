@@ -1,6 +1,5 @@
-<!-- spec-hash-prd: 0000000000000000000000000000000000000000000000000000000000000000 -->
-<!-- spec-hash-techspec: 0000000000000000000000000000000000000000000000000000000000000000 -->
-
+<!-- spec-hash-prd: fc1570dfaf76735b535d09d891136762e22fad5360de0ed32b5e6a2b7f42517d -->
+<!-- spec-hash-techspec: a90b8512e60e9a20f6054daa91d073a0c17f5eab4555586dec61f22ec19acca0 -->
 # Resumo das Tarefas de Implementação para Substituição Completa do Weather pelo Agente Marcos
 
 ## Metadados
@@ -24,14 +23,14 @@
 
 | # | Título | Status | Dependências | Paralelizável | Skills |
 |---|--------|--------|-------------|---------------|--------|
-| 1.0 | Remover o legado weather e fixar marcos-agent como único destino do Telegram | pending | — | — | mastra |
-| 2.0 | Criar a fundação do marcos-agent e o manifest documental obrigatório em Mastra | pending | 1.0 | Não | mastra |
-| 3.0 | Implementar o catálogo de knowledge, sincronização documental e pipeline de RAG do Marcos | pending | 2.0 | Com 4.0 | mastra |
-| 4.0 | Configurar memória persistente, política de contexto e auditoria executiva do Marcos | pending | 2.0 | Com 3.0 | mastra |
-| 5.0 | Implementar workflows core com aprovação humana obrigatória e endpoints operacionais | pending | 2.0, 4.0 | Não | mastra |
-| 6.0 | Materializar capabilities, operators, tools e tool registry cobrindo todo docs/agents/marcos | pending | 3.0, 4.0, 5.0 | Não | mastra |
-| 7.0 | Integrar o adapter Telegram ao runtime final do Marcos com observabilidade e políticas de erro | pending | 1.0, 4.0, 5.0, 6.0 | Não | mastra |
-| 8.0 | Fechar qualidade de produção, readiness gates e validação final para main | pending | 7.0 | Não | mastra |
+| 1.0 | Remover o legado weather e fixar marcos-agent como único destino do Telegram | done | — | — | mastra |
+| 2.0 | Criar a fundação do marcos-agent e o manifest documental obrigatório em Mastra | done | 1.0 | Não | mastra |
+| 3.0 | Implementar o catálogo de knowledge, sincronização documental e pipeline de RAG do Marcos | done | 2.0 | Com 4.0 | mastra |
+| 4.0 | Configurar memória persistente, política de contexto e auditoria executiva do Marcos | done | 2.0 | Com 3.0 | mastra |
+| 5.0 | Implementar workflows core com aprovação humana obrigatória e endpoints operacionais | done | 2.0, 4.0 | Não | mastra |
+| 6.0 | Materializar capabilities, operators, tools e tool registry cobrindo todo docs/agents/marcos | done | 3.0, 4.0, 5.0 | Não | mastra |
+| 7.0 | Integrar o adapter Telegram ao runtime final do Marcos com observabilidade e políticas de erro | done | 1.0, 4.0, 5.0, 6.0 | Não | mastra |
+| 8.0 | Fechar qualidade de produção, readiness gates e validação final para main | done | 7.0 | Não | mastra |
 
 ## Dependências Críticas
 - `2.0` depende da remoção completa do legado para evitar coexistência ambígua entre `weather` e `Marcos`.

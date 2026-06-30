@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-substituicao-weather-por-marcos/1.0_execution_report.md
+summary: Removido o registro ativo do legado weather e fixado o Telegram em marcos-agent com resposta transitória controlada.
+timestamp: 2026-06-29T16:14:40Z

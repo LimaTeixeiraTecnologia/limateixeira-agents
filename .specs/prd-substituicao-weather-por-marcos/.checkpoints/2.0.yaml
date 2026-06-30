@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-substituicao-weather-por-marcos/2.0_execution_report.md
+summary: Registrado o marcos-agent em Mastra, materializado o manifesto tipado de docs/agents/marcos e exposto o readiness inicial em /marcos/health.
+timestamp: 2026-06-29T19:21:04Z

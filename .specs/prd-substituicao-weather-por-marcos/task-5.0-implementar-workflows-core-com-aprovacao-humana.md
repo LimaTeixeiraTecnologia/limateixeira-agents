@@ -1,5 +1,7 @@
 # Tarefa 5.0: Implementar workflows core com aprovação humana obrigatória e endpoints operacionais
 
+**Status:** done
+
 <critical>Ler prd.md e techspec.md desta pasta — sua tarefa será invalidada se você pular</critical>
 
 ## Visão Geral
@@ -57,3 +59,12 @@ Referenciar `techspec.md` nas seções "Visão Geral dos Componentes", "Endpoint
 - `docs/agents/marcos/07_notification_workflow.md`
 - `docs/agents/marcos/05_report_generation_workflow.md`
 - `docs/agents/marcos/01_daily_planning_workflow.md`
+
+## Evidências de Execução
+- Relatório: `.specs/prd-substituicao-weather-por-marcos/5.0_execution_report.md`
+- `ai-spec verify .` -> pass
+- `ai-spec check-spec-drift .specs/prd-substituicao-weather-por-marcos/tasks.md` -> pass
+- `cd agents && npm run typecheck` -> pass
+- `cd agents && npm run test` -> pass (`52` testes aprovados)
+- `cd agents && npm run check` -> pass
+- `cd agents && npm run dev` -> blocked por `ECONNREFUSED 127.0.0.1:55432` no PostgreSQL local durante o smoke

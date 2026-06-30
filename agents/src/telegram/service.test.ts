@@ -1,5 +1,9 @@
 import { Hono } from 'hono';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  TELEGRAM_LEGACY_WEATHER_TEXT,
+  TELEGRAM_OFFICIAL_AGENT_ID,
+} from './constants';
 import { TELEGRAM_HEALTH_PATH, TELEGRAM_WEBHOOK_PATH } from './constants';
 import { DeterministicTelegramRouter } from './router';
 import { TelegramService } from './service';
@@ -59,7 +63,17 @@ function createService() {
     generateResponse: vi.fn(
       async (
         input: TelegramAgentExecutionInput,
-      ) => ({ text: `agent:${input.agentId}:${input.normalizedPrompt}` }),
+      ) => ({
+        approvalStatus: 'not_required' as const,
+        capabilityIds: ['09-product-discovery-capability'],
+        correlationId:
+          (input.requestContext.get('correlationId') as string | undefined) ?? 'missing',
+        knowledgeDocumentIds: ['00-system-prompt'],
+        text: `agent:${input.agentId}:${input.normalizedPrompt}`,
+        tokenUsage: 123,
+        toolIds: [],
+        workflowId: 'telegram-marcos-runtime',
+      }),
     ),
   };
 
@@ -113,7 +127,7 @@ describe('telegram service', () => {
           message_id: 1,
           from: { id: 999, username: 'jailton' },
           chat: { id: 200, type: 'private' },
-          text: '/weather recife',
+          text: 'Quero ajuda para priorizar o dia',
         },
       }),
     });
@@ -137,7 +151,7 @@ describe('telegram service', () => {
           message_id: 1,
           from: { id: 123, username: 'intruso' },
           chat: { id: 200, type: 'private' },
-          text: '/weather salvador',
+          text: 'Quero ajuda para priorizar o dia',
         },
       }),
     });
@@ -150,7 +164,7 @@ describe('telegram service', () => {
     expect(store.markIgnored).toHaveBeenCalledWith(2n, 'telegram_user_not_allowed');
   });
 
-  it('processa caminho feliz local com agente e outbound', async () => {
+  it('processa caminho feliz local com marcos-agent e outbound', async () => {
     const app = createApp(service);
     const response = await app.request('/telegram/webhook/path-key', {
       method: 'POST',
@@ -164,14 +178,22 @@ describe('telegram service', () => {
           message_id: 1,
           from: { id: 999, username: 'jailton' },
           chat: { id: 200, type: 'private' },
-          text: '/weather recife',
+          text: 'Quero ajuda para priorizar o dia',
         },
       }),
     });
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ status: 'processed' });
-    expect(agentRuntime.generateResponse).toHaveBeenCalled();
+    expect(agentRuntime.generateResponse).toHaveBeenCalledWith(
+      expect.objectContaining({
+        agentId: TELEGRAM_OFFICIAL_AGENT_ID,
+        normalizedPrompt: 'Quero ajuda para priorizar o dia',
+        requestContext: expect.objectContaining({
+          get: expect.any(Function),
+        }),
+      }),
+    );
   });
 
   it('responde /help via outbound sem disparar agente', async () => {
@@ -222,7 +244,7 @@ describe('telegram service', () => {
           message_id: 1,
           from: { id: 999, username: 'jailton' },
           chat: { id: 200, type: 'private' },
-          text: '/weather recife',
+          text: 'Quero ajuda para priorizar o dia',
         },
       }),
     });
@@ -240,6 +262,36 @@ describe('telegram service', () => {
       expect.objectContaining({
         updateId: 5n,
         errorCode: 'telegram_outbound_failed',
+      }),
+    );
+  });
+
+  it('responde comando legado /weather sem executar runtime de agent', async () => {
+    const app = createApp(service);
+    const response = await app.request('/telegram/webhook/path-key', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-telegram-bot-api-secret-token': 'secret-token',
+      },
+      body: JSON.stringify({
+        update_id: 6,
+        message: {
+          message_id: 1,
+          from: { id: 999, username: 'jailton' },
+          chat: { id: 200, type: 'private' },
+          text: '/weather recife',
+        },
+      }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ status: 'processed' });
+    expect(agentRuntime.generateResponse).not.toHaveBeenCalled();
+    expect(store.recordOutboundSent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        updateId: 6n,
+        responseText: TELEGRAM_LEGACY_WEATHER_TEXT,
       }),
     );
   });

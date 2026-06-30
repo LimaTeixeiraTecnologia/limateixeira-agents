@@ -1,5 +1,7 @@
 # Tarefa 3.0: Implementar o catálogo de knowledge, sincronização documental e pipeline de RAG do Marcos
 
+**Status:** done
+
 <critical>Ler prd.md e techspec.md desta pasta — sua tarefa será invalidada se você pular</critical>
 
 ## Visão Geral
@@ -54,3 +56,12 @@ Referenciar `techspec.md` nas seções "Modelos de Dados", "Pontos de Integraç�
 - `agents/src/mastra/storage.ts`
 - `agents/src/mastra/index.ts`
 - `docs/agents/marcos/`
+
+## Evidências de Execução
+- Relatório: `.specs/prd-substituicao-weather-por-marcos/3.0_execution_report.md`
+- `ai-spec verify .` -> pass
+- `ai-spec check-spec-drift .specs/prd-substituicao-weather-por-marcos/tasks.md` -> pass
+- `cd agents && npm run typecheck` -> pass
+- `cd agents && npm run test` -> pass (`41` testes aprovados)
+- `cd agents && npm run check` -> pass
+- `cd agents && npm run dev` -> blocked por `ECONNREFUSED 127.0.0.1:55432` no PostgreSQL local durante o smoke

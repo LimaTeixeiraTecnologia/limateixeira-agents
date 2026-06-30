@@ -1,8 +1,22 @@
+export const TELEGRAM_OFFICIAL_AGENT_ID = 'marcos-agent';
+
 export const TELEGRAM_HELP_TEXT = [
-  'Canal Telegram ativo em modo controlado.',
+  'Canal Telegram ativo em modo controlado para o Marcos.',
   'Comandos disponíveis:',
-  '/weather <cidade> - consulta o agente de clima',
   '/help - mostra esta ajuda',
+  '/start - reinicia a orientação do canal',
+  'Envie uma mensagem de texto para falar com o marcos-agent.',
+].join('\n');
+
+export const TELEGRAM_LEGACY_WEATHER_TEXT = [
+  'O fluxo legado de clima foi desativado neste canal.',
+  'Envie sua solicitação em linguagem natural para o marcos-agent.',
+].join('\n');
+
+export const TELEGRAM_MARCOS_TRANSITION_TEXT = [
+  'O marcos-agent já é o destino oficial do Telegram.',
+  'O runtime executivo completo ainda está em implantação nesta etapa.',
+  'Sua mensagem foi recebida, mas o atendimento do Marcos será habilitado na próxima task.',
 ].join('\n');
 
 export const TELEGRAM_ALLOWED_PERSON_SEEDS = [

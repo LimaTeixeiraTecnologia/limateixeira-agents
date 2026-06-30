@@ -1,5 +1,7 @@
 # Tarefa 8.0: Fechar qualidade de produção, readiness gates e validação final para main
 
+**Status:** done
+
 <critical>Ler prd.md e techspec.md desta pasta — sua tarefa será invalidada se você pular</critical>
 
 ## Visão Geral
@@ -55,3 +57,16 @@ Referenciar `techspec.md` nas seções "Abordagem de Testes", "Monitoramento e O
 - `.specs/prd-substituicao-weather-por-marcos/prd.md`
 - `.specs/prd-substituicao-weather-por-marcos/techspec.md`
 - `.specs/prd-substituicao-weather-por-marcos/task-*.md`
+
+## Evidências de Execução
+- Relatório: `.specs/prd-substituicao-weather-por-marcos/8.0_execution_report.md`
+- `ai-spec verify .` -> pass
+- `ai-spec check-spec-drift .specs/prd-substituicao-weather-por-marcos/tasks.md` -> pass
+- `cd agents && npm run typecheck` -> pass
+- `cd agents && npm run test -- src/mastra/marcos-health.test.ts src/mastra/index.test.ts` -> pass (`5` testes aprovados)
+- `cd agents && npm run test` -> pass (`59` testes aprovados)
+- `cd agents && npm run check` -> pass
+- `cd agents && npm run dev` -> blocked por `ECONNREFUSED 127.0.0.1:55432` no PostgreSQL local durante o smoke
+- `./deployment/scripts/smoke-test.sh` -> pass
+- `GET /marcos/knowledge/status` via Traefik local -> `200` com `ready=true`
+- `GET /marcos/health` via Traefik local -> `503` coerente com blocker esperado de allowlist local

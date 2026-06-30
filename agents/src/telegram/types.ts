@@ -56,6 +56,7 @@ export type TelegramSendResult = {
 
 export type TelegramRouteResult =
   | { kind: 'agent'; agentId: string; normalizedPrompt: string }
+  | { kind: 'legacy_weather'; message: string }
   | { kind: 'help'; message: string };
 
 export type TelegramConversationInput = {
@@ -73,7 +74,15 @@ export type TelegramAgentExecutionInput = {
 };
 
 export type TelegramAgentExecutionResult = {
+  approvalStatus: 'approved' | 'not_required' | 'pending' | 'rejected';
+  capabilityIds: string[];
+  correlationId: string;
+  finishReason?: string;
+  knowledgeDocumentIds: string[];
   text: string;
+  tokenUsage?: number | null;
+  toolIds: string[];
+  workflowId: string;
 };
 
 export type TelegramHealthReport = {

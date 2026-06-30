@@ -12,6 +12,7 @@ WORKDIR /app/agents
 
 COPY agents/tsconfig.json ./
 COPY agents/src ./src
+COPY docs/agents/marcos /app/docs/agents/marcos
 
 RUN npm_config_cache=/tmp/.npm-cache npx mastra build --studio
 
@@ -33,6 +34,7 @@ RUN npm ci --omit=dev --ignore-scripts \
   && npm cache clean --force
 
 COPY --from=build /app/agents/.mastra/output ./.mastra/output
+COPY docs/agents/marcos /app/docs/agents/marcos
 
 USER mastra
 

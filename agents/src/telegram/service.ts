@@ -70,6 +70,7 @@ export class TelegramService {
   }
 
   private buildRequestContext(input: {
+    correlationId: string;
     telegramUserId: bigint;
     telegramChatId: bigint;
     allowedPersonKey: string;
@@ -79,6 +80,7 @@ export class TelegramService {
     requestContext.set('telegramUserId', input.telegramUserId.toString());
     requestContext.set('telegramChatId', input.telegramChatId.toString());
     requestContext.set('allowedPersonKey', input.allowedPersonKey);
+    requestContext.set('correlationId', input.correlationId);
     return requestContext;
   }
 
@@ -87,21 +89,49 @@ export class TelegramService {
     envelope: ReturnType<typeof parseTelegramUpdate>;
     allowedPersonKey: string;
     currentAgentId: string | null;
-  }): Promise<{ responseText: string; agentId: string | null; threadId: string | null }> {
-    if (input.routeResult.kind === 'help') {
+  }): Promise<{
+    responseText: string;
+    agentId: string | null;
+    threadId: string | null;
+    routeKind: TelegramRouteResult['kind'];
+    approvalStatus: 'approved' | 'not_required' | 'pending' | 'rejected';
+    capabilityIds: string[];
+    correlationId: string | null;
+    knowledgeDocumentIds: string[];
+    tokenUsage: number | null;
+    toolIds: string[];
+    workflowId: string | null;
+  }> {
+    if (
+      input.routeResult.kind === 'help' ||
+      input.routeResult.kind === 'legacy_weather'
+    ) {
       const thread = await this.deps.store.getOrCreateThread({
         telegramChatId: input.envelope.telegramChatId,
         telegramUserId: input.envelope.telegramUserId,
-        currentAgentId: input.currentAgentId ?? 'telegram-help',
+        currentAgentId:
+          input.currentAgentId ??
+          (input.routeResult.kind === 'legacy_weather'
+            ? 'telegram-legacy-weather'
+            : 'telegram-help'),
       });
 
       return {
         responseText: input.routeResult.message,
         agentId: null,
         threadId: thread.mastraThreadId,
+        routeKind: input.routeResult.kind,
+        approvalStatus: 'not_required',
+        capabilityIds: [],
+        correlationId: null,
+        knowledgeDocumentIds: [],
+        tokenUsage: null,
+        toolIds: [],
+        workflowId: null,
       };
     }
 
+    const correlationId = `telegram:${input.envelope.updateId.toString()}`;
     const thread = await this.deps.store.getOrCreateThread({
       telegramChatId: input.envelope.telegramChatId,
       telegramUserId: input.envelope.telegramUserId,
@@ -109,6 +139,7 @@ export class TelegramService {
     });
 
     const requestContext = this.buildRequestContext({
+      correlationId,
       telegramUserId: input.envelope.telegramUserId,
       telegramChatId: input.envelope.telegramChatId,
       allowedPersonKey: input.allowedPersonKey,
@@ -126,6 +157,14 @@ export class TelegramService {
       responseText: result.text,
       agentId: input.routeResult.agentId,
       threadId: thread.mastraThreadId,
+      routeKind: input.routeResult.kind,
+      approvalStatus: result.approvalStatus,
+      capabilityIds: result.capabilityIds,
+      correlationId: result.correlationId,
+      knowledgeDocumentIds: result.knowledgeDocumentIds,
+      tokenUsage: result.tokenUsage ?? null,
+      toolIds: result.toolIds,
+      workflowId: result.workflowId,
     };
   }
 
@@ -217,8 +256,16 @@ export class TelegramService {
         telegramUserId: envelope.telegramUserId.toString(),
         chatId: envelope.telegramChatId.toString(),
         agentId: execution.agentId,
+        routeKind: execution.routeKind,
+        approvalStatus: execution.approvalStatus,
+        capabilityIds: execution.capabilityIds,
+        correlationId: execution.correlationId,
         eventStatus: 'processed',
+        knowledgeDocumentIds: execution.knowledgeDocumentIds,
         latencyMs: Date.now() - startedAt,
+        tokenUsage: execution.tokenUsage,
+        toolIds: execution.toolIds,
+        workflowId: execution.workflowId,
       });
 
       return c.json({ status: 'processed' }, 200);

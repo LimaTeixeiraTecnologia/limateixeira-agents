@@ -1,0 +1,30 @@
+export {
+  composeMarcosFoundationalInstructions,
+  marcosKnowledgeManifest,
+  marcosRequiredDocumentKinds,
+  readMarcosDocument,
+  resolveMarcosKnowledgePath,
+  validateMarcosKnowledgeManifest,
+  type MarcosDocumentKind,
+  type MarcosKnowledgeManifestEntry,
+  type MarcosKnowledgeValidationReport,
+} from './manifest';
+
+export {
+  buildMarcosKnowledgeChunks,
+  bootstrapMarcosKnowledgeSchema,
+  computeMarcosDocumentChecksum,
+  ensureMarcosKnowledgeCatalog,
+  getMarcosKnowledgeStatus,
+  inferMarcosDocumentTitle,
+  inferMarcosDocumentVersion,
+  inferMarcosKnowledgeNamespace,
+  MARCOS_KNOWLEDGE_STATUS_PATH,
+  readMarcosKnowledgeSnapshot,
+  syncMarcosKnowledgeCatalog,
+  type MarcosKnowledgeChunk,
+  type MarcosKnowledgeDocumentSnapshot,
+  type MarcosKnowledgeNamespace,
+  type MarcosKnowledgeStatusReport,
+  type MarcosKnowledgeSyncReport,
+} from './catalog';

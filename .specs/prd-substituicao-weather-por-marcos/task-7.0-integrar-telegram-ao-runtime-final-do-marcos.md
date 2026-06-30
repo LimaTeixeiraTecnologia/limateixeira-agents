@@ -1,5 +1,7 @@
 # Tarefa 7.0: Integrar o adapter Telegram ao runtime final do Marcos com observabilidade e políticas de erro
 
+**Status:** done
+
 <critical>Ler prd.md e techspec.md desta pasta — sua tarefa será invalidada se você pular</critical>
 
 ## Visão Geral
@@ -57,3 +59,13 @@ Referenciar `techspec.md` nas seções "Fluxo principal", "Endpoints de API", "M
 - `agents/src/mastra/index.ts`
 - `agents/src/mastra/agents/`
 - `agents/src/logger.ts`
+
+## Evidências de Execução
+- Relatório: `.specs/prd-substituicao-weather-por-marcos/7.0_execution_report.md`
+- `ai-spec verify .` -> pass
+- `ai-spec check-spec-drift .specs/prd-substituicao-weather-por-marcos/tasks.md` -> pass
+- `cd agents && npm run typecheck` -> pass
+- `cd agents && npm run test -- src/telegram/agent-runtime.test.ts src/telegram/router.test.ts src/telegram/service.test.ts` -> pass (`17` testes aprovados)
+- `cd agents && npm run test` -> pass (`58` testes aprovados)
+- `cd agents && npm run check` -> pass
+- `cd agents && npm run dev` -> blocked por `ECONNREFUSED 127.0.0.1:55432` no PostgreSQL local durante o smoke

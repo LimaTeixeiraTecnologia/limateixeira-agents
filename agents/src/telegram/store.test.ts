@@ -98,7 +98,7 @@ describe('postgres telegram store', () => {
     const thread = await store.getOrCreateThread({
       telegramChatId: 1n,
       telegramUserId: 2n,
-      currentAgentId: 'weather-agent',
+      currentAgentId: 'marcos-agent',
     });
 
     expect(thread.mastraThreadId).toBe('thread-1');
@@ -131,7 +131,7 @@ describe('postgres telegram store', () => {
       telegramUserId: 999n,
       telegramChatId: 555n,
       telegramUsername: 'jailton',
-      text: '/weather recife',
+      text: 'Quero ajuda para priorizar o dia',
       updateType: 'message',
       payloadJson: { update_id: 44 },
     });
@@ -140,7 +140,7 @@ describe('postgres telegram store', () => {
       telegramUserId: 999n,
       telegramChatId: 555n,
       telegramUsername: 'jailton',
-      text: '/weather recife',
+      text: 'Quero ajuda para priorizar o dia',
       updateType: 'message',
       payloadJson: { update_id: 44 },
     });
@@ -148,7 +148,7 @@ describe('postgres telegram store', () => {
     const thread = await store.getOrCreateThread({
       telegramChatId: 555n,
       telegramUserId: 999n,
-      currentAgentId: 'weather-agent',
+      currentAgentId: 'marcos-agent',
     });
 
     await store.recordOutboundSent({
@@ -159,9 +159,9 @@ describe('postgres telegram store', () => {
       telegramMessageId: 777n,
     });
     await store.markProcessed(44n, {
-      agentId: 'weather-agent',
+      agentId: 'marcos-agent',
       mastraThreadId: thread.mastraThreadId,
-      responseText: 'clima ok',
+      responseText: 'marcos ok',
     });
 
     const seedCount = await pool.query(

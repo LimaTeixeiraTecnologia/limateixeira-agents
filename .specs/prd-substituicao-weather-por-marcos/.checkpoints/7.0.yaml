@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-substituicao-weather-por-marcos/7.0_execution_report.md
+summary: "O adapter Telegram passou a executar o runtime final do marcos-agent com contexto, auditoria, suspensão explícita e rota legada observável."
+timestamp: 2026-06-30T00:33:20Z

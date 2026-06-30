@@ -1,4 +1,8 @@
-import { TELEGRAM_HELP_TEXT } from './constants';
+import {
+  TELEGRAM_HELP_TEXT,
+  TELEGRAM_LEGACY_WEATHER_TEXT,
+  TELEGRAM_OFFICIAL_AGENT_ID,
+} from './constants';
 import type {
   TelegramInboundMessage,
   TelegramRouteResult,
@@ -24,24 +28,20 @@ export class DeterministicTelegramRouter implements TelegramRouter {
     message: TelegramInboundMessage,
     currentAgentId: string | null,
   ): Promise<TelegramRouteResult> {
-    const { command, remainder } = normalizeCommand(message.text);
+    const { command } = normalizeCommand(message.text);
 
     if (command === '/help' || command === '/start') {
       return { kind: 'help', message: TELEGRAM_HELP_TEXT };
     }
 
     if (command === '/weather') {
-      return {
-        kind: 'agent',
-        agentId: 'weather-agent',
-        normalizedPrompt: remainder || 'Quero saber o clima.',
-      };
+      return { kind: 'legacy_weather', message: TELEGRAM_LEGACY_WEATHER_TEXT };
     }
 
-    if (!command && currentAgentId === 'weather-agent') {
+    if (!command && message.text.trim().length > 0) {
       return {
         kind: 'agent',
-        agentId: 'weather-agent',
+        agentId: TELEGRAM_OFFICIAL_AGENT_ID,
         normalizedPrompt: message.text.trim(),
       };
     }

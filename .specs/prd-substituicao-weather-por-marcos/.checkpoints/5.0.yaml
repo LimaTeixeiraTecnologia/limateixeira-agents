@@ -1,0 +1,4 @@
+status: done
+report_path: .specs/prd-substituicao-weather-por-marcos/5.0_execution_report.md
+summary: "Workflows core do Marcos com suspensão, retomada, persistência de aprovações e endpoint interno de resolução foram entregues e validados."
+timestamp: 2026-06-30T00:19:40Z

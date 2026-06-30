@@ -1,5 +1,7 @@
 # Tarefa 4.0: Configurar memória persistente, política de contexto e auditoria executiva do Marcos
 
+**Status:** done
+
 <critical>Ler prd.md e techspec.md desta pasta — sua tarefa será invalidada se você pular</critical>
 
 ## Visão Geral
@@ -56,3 +58,12 @@ Referenciar `techspec.md` nas seções "Interfaces Chave", "Modelos de Dados", "
 - `agents/src/telegram/store.ts`
 - `docs/agents/marcos/memory_architecture_v1.md`
 - `docs/agents/marcos/context_loading_strategy_v1.md`
+
+## Evidências de Execução
+- Relatório: `.specs/prd-substituicao-weather-por-marcos/4.0_execution_report.md`
+- `ai-spec verify .` -> pass
+- `ai-spec check-spec-drift .specs/prd-substituicao-weather-por-marcos/tasks.md` -> pass
+- `cd agents && npm run typecheck` -> pass
+- `cd agents && npm run test` -> pass (`48` testes aprovados)
+- `cd agents && npm run check` -> pass
+- `cd agents && npm run dev` -> blocked por `ECONNREFUSED 127.0.0.1:55432` no PostgreSQL local durante o smoke
