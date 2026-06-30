@@ -37,6 +37,10 @@ services:
       TELEGRAM_PUBLIC_BASE_URL: ${TELEGRAM_PUBLIC_BASE_URL:-}
       TELEGRAM_WEBHOOK_PATH_KEY_FILE: /run/secrets/telegram_webhook_path_key
       TELEGRAM_WEBHOOK_SECRET_TOKEN_FILE: /run/secrets/telegram_webhook_secret_token
+    command:
+      - sh
+      - -lc
+      - export OPENROUTER_API_KEY="$$(cat /run/secrets/openrouter_api_key)" && exec node .mastra/output/index.mjs
     healthcheck:
       test:
         - CMD-SHELL

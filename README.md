@@ -221,6 +221,7 @@ make agents-dev
 make agents-check
 make deploy-local-up
 make deploy-local-proof
+make deploy-local-info
 ```
 
 ### Fluxo recomendado para primeiro uso
@@ -252,11 +253,49 @@ O proxy exige BasicAuth. As credenciais locais ficam em:
 - usuário: `deployment/.secrets/traefik_username`
 - senha: `deployment/.secrets/traefik_password`
 
+Se preferir imprimir tudo pronto no terminal:
+
+```sh
+make deploy-local-info
+```
+
 Healths úteis no navegador:
 
 - `http://mastra.localhost:8080/marcos/health`
 - `http://mastra.localhost:8080/marcos/knowledge/status`
 - `http://mastra.localhost:8080/telegram/health`
+
+### Primeiro acesso ao Mastra Studio
+
+Na primeira tela do Studio, preencha exatamente assim:
+
+- `Mastra instance URL`: `http://mastra.localhost:8080`
+- `API prefix`: `/api`
+- `Headers`: nenhum
+
+Depois clique em `Save Configuration`.
+
+Resumo importante:
+
+- o login do proxy acontece antes, via BasicAuth do Traefik;
+- o runtime local exporta `OPENROUTER_API_KEY` a partir do secret Docker no boot do serviço `agents`;
+- se o navegador ja abriu a pagina do Studio, nao precisa adicionar header manual nessa tela;
+- se o navegador pedir autenticacao, use:
+  - usuário: `admin`
+  - senha: `local-basic-auth`
+
+Se aparecer `Set OPENROUTER_API_KEY to use this provider`, a stack local está desatualizada ou não foi recriada com build novo. Corrija assim:
+
+```sh
+make deploy-local-up
+make deploy-local-proof
+```
+
+Se essa tela aparecer em branco ou falhar ao salvar:
+
+1. confirme que a stack esta no ar com `make deploy-ps`
+2. rode `make deploy-local-proof`
+3. recarregue `http://mastra.localhost:8080/`
 
 ### DBeaver
 
@@ -282,6 +321,7 @@ Para um ambiente local funcional com Docker Compose, Traefik e Mastra Studio no 
 ```sh
 make deploy-local-up
 make deploy-local-proof
+make deploy-local-info
 ```
 
 Esse caminho:
@@ -293,8 +333,25 @@ Esse caminho:
 - valida `GET /marcos/knowledge/status`;
 - valida `GET /marcos/health` com blocker controlado de allowlist local nao provisionada.
 - expõe o PostgreSQL local na porta `55432` para inspeção externa via DBeaver.
+- exporta `OPENROUTER_API_KEY` para o runtime do `agents` a partir de `deployment/.secrets/openrouter_api_key`.
 
 ### Passo a passo
+
+Fluxo local obrigatório e direto:
+
+1. Garanta que `agents/.env` contém `OPENROUTER_API_KEY=<sua-chave>`.
+2. Rode `make deploy-local-up`.
+3. Rode `make deploy-local-proof`.
+4. Rode `make deploy-local-info`.
+5. Abra `http://mastra.localhost:8080/` no Chrome.
+6. Faça login no BasicAuth.
+7. Na primeira tela do Studio, use:
+   - `Mastra instance URL`: `http://mastra.localhost:8080`
+   - `API prefix`: `/api`
+   - `Headers`: nenhum
+8. Para DBeaver, use os parâmetros exibidos por `make deploy-local-info`.
+
+Fluxo manual completo:
 
 1. Gere os secrets locais:
 

@@ -8,7 +8,7 @@ ENV_FILE := $(DEPLOYMENT_DIR)/.env
 .PHONY: help agents-install agents-dev agents-build agents-typecheck agents-check \
 	deploy-env deploy-secrets deploy-config deploy-up deploy-down deploy-restart \
 	deploy-ps deploy-logs deploy-smoke deploy-backup deploy-restore \
-	deploy-local-init deploy-local-up deploy-local-proof
+	deploy-local-init deploy-local-up deploy-local-proof deploy-local-info
 
 help: ## Lista os comandos disponíveis
 	@awk 'BEGIN {FS = ": ## "}; /^[a-zA-Z0-9_.-]+: ## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -85,6 +85,23 @@ deploy-up: ## Sobe a stack local com build
 
 deploy-local-up: deploy-local-init ## Bootstrap obrigatório + sobe stack local via Traefik na porta 8080
 	docker compose -f $(COMPOSE_FILE) --env-file $(ENV_FILE) up -d --build
+
+deploy-local-info: ## Exibe URL do Chrome, login BasicAuth, configuração do Studio e acesso DBeaver
+	@BASIC_AUTH_USER=$$(tr -d '\r\n' < $(DEPLOYMENT_DIR)/.secrets/traefik_username); \
+	BASIC_AUTH_PASSWORD=$$(tr -d '\r\n' < $(DEPLOYMENT_DIR)/.secrets/traefik_password); \
+	POSTGRES_PASSWORD=$$(tr -d '\r\n' < $(DEPLOYMENT_DIR)/.secrets/postgres_password); \
+	printf '%s\n' \
+		'Chrome URL: http://mastra.localhost:8080/' \
+		'BasicAuth user: '"$$BASIC_AUTH_USER" \
+		'BasicAuth password: '"$$BASIC_AUTH_PASSWORD" \
+		'Studio Mastra instance URL: http://mastra.localhost:8080' \
+		'Studio API prefix: /api' \
+		'Studio headers: none' \
+		'DBeaver host: 127.0.0.1' \
+		'DBeaver port: 55432' \
+		'DBeaver database: agents' \
+		'DBeaver user: agents' \
+		'DBeaver password: '"$$POSTGRES_PASSWORD"
 
 deploy-down: ## Derruba a stack local sem remover o volume
 	docker compose -f $(COMPOSE_FILE) --env-file $(ENV_FILE) down
