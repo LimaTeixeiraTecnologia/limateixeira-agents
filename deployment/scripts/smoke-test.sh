@@ -67,6 +67,7 @@ wait_for_health() {
 
 THREAD_ID="smoke-thread-$(date +%s)"
 RESOURCE_ID="smoke-resource-$(date +%s)"
+UPDATE_ID=$(date +%s)
 
 docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d --build
 
@@ -97,7 +98,7 @@ WEBHOOK_STATUS=$(curl -s -o /tmp/telegram-webhook.json -w '%{http_code}' \
   -H "Host: $APP_HOST" \
   -H 'Content-Type: application/json' \
   -H "X-Telegram-Bot-Api-Secret-Token: $TELEGRAM_WEBHOOK_SECRET_TOKEN" \
-  -d '{"update_id":9001,"message":{"message_id":1,"from":{"id":123456789,"username":"intruso"},"chat":{"id":123456789,"type":"private"},"text":"/help"}}' \
+  -d "{\"update_id\":$UPDATE_ID,\"message\":{\"message_id\":1,\"from\":{\"id\":123456789,\"username\":\"intruso\"},\"chat\":{\"id\":123456789,\"type\":\"private\"},\"text\":\"/help\"}}" \
   "http://127.0.0.1:$TRAEFIK_HTTP_PORT/telegram/webhook/$TELEGRAM_WEBHOOK_PATH_KEY")
 
 if [ "$WEBHOOK_STATUS" -ne 200 ]; then
@@ -111,7 +112,7 @@ if ! grep -q '"reason":"telegram_user_not_allowed"' /tmp/telegram-webhook.json; 
 fi
 
 EVENT_STATUS=$(docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T postgres \
-  psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "SELECT status FROM agents.telegram_webhook_events WHERE update_id = 9001;")
+  psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "SELECT status FROM agents.telegram_webhook_events WHERE update_id = $UPDATE_ID;")
 
 if [ "$EVENT_STATUS" != "ignored" ]; then
   echo "falha: evento sintético do telegram nao foi persistido como ignored" >&2

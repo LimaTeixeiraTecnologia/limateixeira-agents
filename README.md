@@ -219,6 +219,8 @@ make help
 make agents-install
 make agents-dev
 make agents-check
+make deploy-local-up
+make deploy-local-proof
 ```
 
 ### Fluxo recomendado para primeiro uso
@@ -232,6 +234,65 @@ make agents-check
 ## Como Subir O Deploy Local Completo
 
 Use a stack em `deployment/` quando quiser executar proxy, banco e servico juntos.
+
+## Acesso Local
+
+### Chrome
+
+URL canônica do Mastra Studio local no Chrome:
+
+```text
+http://mastra.localhost:8080/
+```
+
+Esse acesso passa obrigatoriamente pelo Traefik.
+
+O proxy exige BasicAuth. As credenciais locais ficam em:
+
+- usuário: `deployment/.secrets/traefik_username`
+- senha: `deployment/.secrets/traefik_password`
+
+Healths úteis no navegador:
+
+- `http://mastra.localhost:8080/marcos/health`
+- `http://mastra.localhost:8080/marcos/knowledge/status`
+- `http://mastra.localhost:8080/telegram/health`
+
+### DBeaver
+
+O PostgreSQL do Compose fica exposto no host para acesso local do DBeaver.
+
+Use esta configuração:
+
+- Host: `127.0.0.1`
+- Port: `55432`
+- Database: `agents`
+- Username: `agents`
+- Password: conteúdo de `deployment/.secrets/postgres_password`
+
+Observação importante:
+
+- o password do banco da stack Docker não é o `agents/.env`
+- o password correto para o DBeaver é sempre o secret gerado em `deployment/.secrets/postgres_password`
+
+### Caminho canonico obrigatorio
+
+Para um ambiente local funcional com Docker Compose, Traefik e Mastra Studio no proxy, o fluxo canonico deste repositorio passa a ser:
+
+```sh
+make deploy-local-up
+make deploy-local-proof
+```
+
+Esse caminho:
+
+- cria `deployment/.env` com defaults locais se ele ainda nao existir;
+- gera `deployment/.secrets/` com valores locais de smoke se ainda nao existir;
+- sobe `traefik`, `postgres` e `agents`;
+- valida o Studio em `http://mastra.localhost:8080/`;
+- valida `GET /marcos/knowledge/status`;
+- valida `GET /marcos/health` com blocker controlado de allowlist local nao provisionada.
+- expõe o PostgreSQL local na porta `55432` para inspeção externa via DBeaver.
 
 ### Passo a passo
 
@@ -272,11 +333,21 @@ make deploy-up
 make deploy-smoke
 ```
 
+6. Rode a prova local completa do proxy + Studio:
+
+```sh
+make deploy-local-proof
+```
+
 ### Endpoints e operacao
 
-- Aplicacao e Studio via proxy: `http://mastra.localhost`
-- Health do Telegram: `http://mastra.localhost/telegram/health`
-- Webhook local: `http://mastra.localhost/telegram/webhook/<webhookPathKey>`
+- Aplicacao e Studio via proxy Traefik: `http://mastra.localhost:8080/`
+- Health agregado do runtime Marcos: `http://mastra.localhost:8080/marcos/health`
+- Status detalhado do knowledge: `http://mastra.localhost:8080/marcos/knowledge/status`
+- Health do Telegram: `http://mastra.localhost:8080/telegram/health`
+- Webhook local: `http://mastra.localhost:8080/telegram/webhook/<webhookPathKey>`
+
+O acesso HTTP local passa obrigatoriamente pelo Traefik. O `agents` nao expoe porta publica direta no Compose; o ponto de entrada externo e a porta `8080` do proxy.
 
 Comandos operacionais:
 
@@ -317,6 +388,19 @@ cd agents
 cat .env
 npm run typecheck
 ```
+
+### O Studio nao abre no deploy local
+
+**Sintoma**: `http://mastra.localhost:8080/` nao responde `Mastra Studio`.  
+**Causa mais comum**: stack local nao foi subida pelo fluxo canonico ou o proxy nao recebeu os secrets locais.  
+**Como verificar**:
+
+```sh
+make deploy-ps
+make deploy-local-proof
+```
+
+Se `make deploy-local-proof` passar, o Studio esta funcional atras do Traefik e o health agregado do Marcos esta respondendo conforme esperado para o ambiente local.
 
 **Acao**: confirme conectividade com o banco, valores do `.env` e se o schema `agents` esta acessivel.
 

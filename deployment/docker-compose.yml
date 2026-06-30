@@ -58,6 +58,8 @@ services:
 
   postgres:
     image: postgres:17-bookworm
+    ports:
+      - "${POSTGRES_PORT:-55432}:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-agents}
       POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C.UTF-8 --data-checksums
