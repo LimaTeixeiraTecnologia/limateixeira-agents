@@ -1,6 +1,6 @@
 http:
   routers:
-    agents-telegram-webhook:
+    agents-telegram-webhook-local:
       entryPoints:
         - web
       middlewares:
@@ -9,7 +9,7 @@ http:
       rule: Host(`mastra.localhost`) && PathPrefix(`/telegram/webhook/`)
       service: agents
 
-    agents:
+    agents-local:
       entryPoints:
         - web
       middlewares:
@@ -18,6 +18,31 @@ http:
       priority: 10
       rule: Host(`mastra.localhost`)
       service: agents
+
+    agents-telegram-webhook-prod:
+      entryPoints:
+        - web
+        - websecure
+      middlewares:
+        - agents-security
+      priority: 100
+      rule: Host(`api.limateixeira.com.br`) && PathPrefix(`/telegram/webhook/`)
+      service: agents
+      tls:
+        certResolver: letsencrypt
+
+    agents-prod:
+      entryPoints:
+        - web
+        - websecure
+      middlewares:
+        - agents-auth
+        - agents-security
+      priority: 10
+      rule: Host(`api.limateixeira.com.br`)
+      service: agents
+      tls:
+        certResolver: letsencrypt
 
   services:
     agents:

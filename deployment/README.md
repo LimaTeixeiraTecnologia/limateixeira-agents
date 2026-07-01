@@ -2,11 +2,16 @@
 
 Stack local de deploy para o workspace `agents` com Traefik, Mastra, adapter Telegram e PostgreSQL persistente.
 
+O roteamento local continua usando `mastra.localhost`, e o roteamento de
+producao fica preparado para `api.limateixeira.com.br`.
+
 ## Requisitos
 
 - Docker Engine e Docker Compose Plugin
 - Entrada local para `mastra.localhost`
   - em sistemas atuais, `*.localhost` normalmente resolve para `127.0.0.1`
+- Dominio publicado `api.limateixeira.com.br` apontando para o IP publico do VPS
+- Porta `80` e `443` liberadas no host
 - Chave válida de `OPENROUTER_API_KEY`
 - Secrets do Telegram:
   - `TELEGRAM_BOT_TOKEN`
@@ -36,12 +41,20 @@ make deploy-env
 3. Ajustar `deployment/.env` para o adapter Telegram:
 
 ```dotenv
+ACME_EMAIL=<EMAIL_PARA_LETS_ENCRYPT>
 TELEGRAM_ENABLED=true
-TELEGRAM_PUBLIC_BASE_URL=https://<dominio-publico-com-https>
+TELEGRAM_PUBLIC_BASE_URL=https://api.limateixeira.com.br
 TELEGRAM_ALLOWED_UPDATES=message
 ```
 
-4. Subir a stack:
+4. Em producao, apontar `api.limateixeira.com.br` para o IP do VPS no
+Cloudflare.
+
+- Para a primeira emissao do certificado, prefira `DNS only` no Cloudflare.
+- Depois da emissao e validacao do HTTPS, voce pode decidir se quer reativar o
+  proxy da Cloudflare.
+
+5. Subir a stack:
 
 ```sh
 make deploy-up
@@ -57,9 +70,13 @@ Endpoints:
 - Mastra e Studio: `http://mastra.localhost`
 - Health do adapter Telegram: `http://mastra.localhost/telegram/health` via BasicAuth
 - Webhook público do Telegram: `http://mastra.localhost/telegram/webhook/<webhookPathKey>` sem BasicAuth no ambiente local
+- Produção: `https://api.limateixeira.com.br`
+- Health em produção: `https://api.limateixeira.com.br/telegram/health` via BasicAuth
+- Webhook público em produção: `https://api.limateixeira.com.br/telegram/webhook/<webhookPathKey>` sem BasicAuth
 - Banco: acessível apenas na rede interna do Compose
 - O roteamento do Traefik usa provider `file`, evitando expor o socket Docker no proxy
 - Apenas o path `/telegram/webhook/*` fica sem `agents-auth`; o restante continua atrás de BasicAuth
+- O Traefik persiste certificados ACME no volume `agents_traefik_acme`
 
 ## Persistência
 
